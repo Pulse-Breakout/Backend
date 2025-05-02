@@ -2,7 +2,11 @@
 resolver = "2"
 members = [
     "crates/web-server",
-    "crates/libs/model", "crates/libs/handlers", "crates/libs/routes",
+    "crates/libs/model", "crates/libs/handlers", "crates/libs/routes", "crates/libs/database",
 ]
 
+
+[workspace.dependencies]
+axum = "0.8.3"
+tokio = { version = "1.36", features = ["full"] }
 

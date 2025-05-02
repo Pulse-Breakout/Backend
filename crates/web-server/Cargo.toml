@@ -7,6 +7,7 @@ edition = "2021"
 model = { path = "../libs/model" }
 handlers = { path = "../libs/handlers" }
 routes =  { path = "../libs/routes" }
-axum = "0.8.3"
-tokio = { version = "1", features = ["full"] }
+database = { path = "../libs/database" }
+axum.workspace = true
+tokio.workspace = true
 

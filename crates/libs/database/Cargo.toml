@@ -1,0 +1,11 @@
+[package]
+name = "database"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+sqlx = { version = "0.7", features = ["runtime-tokio", "tls-rustls", "postgres", "uuid", "chrono"] }
+tokio.workspace = true
+dotenvy = "0.15"
+async-trait = "0.1.77"
+thiserror = "1.0"

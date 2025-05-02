@@ -4,6 +4,10 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
-axum = "0.8.3"
+axum.workspace = true
+tokio.workspace = true
+tower = "0.5.2"
+
 handlers = { path = "../handlers" }
 model = { path = "../model" }
+database = { path = "../database" }
