@@ -4,7 +4,6 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
-model = { path = "../libs/model" }
 handlers = { path = "../libs/handlers" }
 routes =  { path = "../libs/routes" }
 database = { path = "../libs/database" }

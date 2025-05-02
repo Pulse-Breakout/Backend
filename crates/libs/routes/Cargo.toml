@@ -9,5 +9,4 @@ tokio.workspace = true
 tower = "0.5.2"
 
 handlers = { path = "../handlers" }
-model = { path = "../model" }
 database = { path = "../database" }

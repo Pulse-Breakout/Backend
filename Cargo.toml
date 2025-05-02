@@ -2,7 +2,9 @@
 resolver = "2"
 members = [
     "crates/web-server",
-    "crates/libs/model", "crates/libs/handlers", "crates/libs/routes", "crates/libs/database",
+    "crates/libs/handlers", 
+    "crates/libs/routes", 
+    "crates/libs/database",
 ]
 
 

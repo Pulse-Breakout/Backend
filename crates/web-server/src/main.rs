@@ -1,4 +1,3 @@
-use model;
 use handlers;
 use routes;
 use database;
