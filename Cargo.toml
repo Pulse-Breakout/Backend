@@ -1,0 +1,8 @@
+[workspace]
+resolver = "2"
+members = [
+    "crates/web-server",
+    "crates/libs/model", "crates/libs/handlers", "crates/libs/routes",
+]
+
+

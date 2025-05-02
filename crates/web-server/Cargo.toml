@@ -1,0 +1,12 @@
+[package]
+name = "web-server"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+model = { path = "../libs/model" }
+handlers = { path = "../libs/handlers" }
+routes =  { path = "../libs/routes" }
+axum = "0.8.3"
+tokio = { version = "1", features = ["full"] }
+
