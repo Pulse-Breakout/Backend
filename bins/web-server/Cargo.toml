@@ -1,0 +1,12 @@
+[package]
+name = "web-server"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+handlers = { path = "../../crates/libs/handlers" }
+routes =  { path = "../../crates/libs/routes" }
+database = { path = "../../crates/libs/database" }
+axum.workspace = true
+tokio.workspace = true
+
