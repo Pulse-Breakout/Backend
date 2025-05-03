@@ -4,7 +4,7 @@ use axum::{
     extract::State,
 };
 use std::sync::Arc;
-use database::Database;
+use database::connection::Database;
 
 // Define a simple handler function
 async fn hello_world() -> &'static str {

@@ -6,7 +6,7 @@ use std::net::SocketAddr;
 #[tokio::main]
 async fn main() {
     // Initialize the database connection
-    let db = match database::create_db_pool().await {
+    let db = match database::connection::create_db_pool().await {
         Ok(pool) => {
             println!("✅ Connected to database successfully");
             pool
