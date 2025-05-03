@@ -11,6 +11,7 @@ members = [
 [workspace.dependencies]
 axum = "0.8.3"
 tokio = { version = "1.36", features = ["full"] }
+teloxide = { version = "0.13", features = ["macros"] }
 pulse_database = {path = "crates/database" }
 pulse_handlers = {path = "crates/handlers" }
 pulse_routes = {path = "crates/routes" }
