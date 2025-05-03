@@ -1,11 +1,17 @@
+pub mod logbot;
+
 use pulse_handlers;
 use pulse_routes;
 use pulse_database;
 use std::net::SocketAddr;
 
+
+
 #[tokio::main]
 async fn main() {
     // Initialize the database connection
+
+
     let db = match pulse_database::connection::create_db_pool().await {
         Ok(pool) => {
             println!("✅ Connected to database successfully");
@@ -26,4 +32,8 @@ async fn main() {
     
     let listener = tokio::net::TcpListener::bind(addr).await.unwrap();
     axum::serve(listener, app).await.unwrap();
+
+
+
+
 }

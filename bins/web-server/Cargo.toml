@@ -10,3 +10,4 @@ pulse_routes.workspace = true
 axum.workspace = true
 tokio.workspace = true
 
+teloxide.workspace = true
