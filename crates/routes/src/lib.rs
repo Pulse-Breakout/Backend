@@ -1,10 +1,11 @@
 use axum::{
-    routing::get,
+    routing::{get, post, put, delete},
     Router,
     extract::State,
 };
 use std::sync::Arc;
 use pulse_database::connection::Database;
+use pulse_handlers::user_handler;
 
 // Define a simple handler function
 async fn hello_world() -> &'static str {
@@ -24,6 +25,12 @@ pub fn create_router(db: Arc<Database>) -> Router {
     Router::new()
         .route("/", get(hello_world))
         .route("/api/health", get(health_check))
+        // User routes
+        .route("/api/users", get(user_handler::get_users))
+        .route("/api/users", post(user_handler::create_user))
+        .route("/api/users/{id}", get(user_handler::get_user))
+        .route("/api/users/{id}", put(user_handler::update_user))
+        .route("/api/users/{id}", delete(user_handler::delete_user))
         .with_state(db)
 }
 
@@ -35,14 +42,6 @@ mod tests {
     use tower::ServiceExt;
     use std::sync::Arc;
 
-    // Mock database for testing
-    struct MockDatabase;
-
-    impl MockDatabase {
-        async fn test_connection(&self) -> Result<(), database::DbError> {
-            Ok(())
-        }
-    }
 
     #[tokio::test]
     async fn test_hello_world() {

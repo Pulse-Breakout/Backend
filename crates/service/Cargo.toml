@@ -1,0 +1,11 @@
+[package]
+name = "pulse_service"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+pulse_database = { workspace = true }
+sqlx = { workspace = true }
+uuid = { workspace = true }
+tokio = { workspace = true }
+thiserror = { workspace = true }

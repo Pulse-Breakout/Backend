@@ -5,6 +5,7 @@ members = [
     "crates/handlers",
     "crates/routes",
     "crates/database",
+    "crates/service",
 ]
 
 
@@ -15,3 +16,11 @@ teloxide = { version = "0.13", features = ["macros"] }
 pulse_database = {path = "crates/database" }
 pulse_handlers = {path = "crates/handlers" }
 pulse_routes = {path = "crates/routes" }
+pulse_service = {path = "crates/service" }
+
+# Common dependencies
+sqlx = { version = "0.7", features = ["runtime-tokio", "tls-rustls", "postgres", "uuid", "chrono", "migrate"] }
+uuid = { version = "1.6", features = ["v4", "serde"] }
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+thiserror = "1.0"
