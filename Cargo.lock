@@ -283,17 +283,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "database"
-version = "0.1.0"
-dependencies = [
- "async-trait",
- "dotenvy",
- "sqlx",
- "thiserror",
- "tokio",
-]
-
-[[package]]
 name = "der"
 version = "0.7.10"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -517,10 +506,6 @@ name = "gimli"
 version = "0.31.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "07e28edb80900c19c28f1072f2e8aeca7fa06b23cd4169cefe1af5aa3260783f"
-
-[[package]]
-name = "handlers"
-version = "0.1.0"
 
 [[package]]
 name = "hashbrown"
@@ -1147,6 +1132,32 @@ dependencies = [
 ]
 
 [[package]]
+name = "pulse_database"
+version = "0.1.0"
+dependencies = [
+ "async-trait",
+ "dotenvy",
+ "sqlx",
+ "thiserror",
+ "tokio",
+]
+
+[[package]]
+name = "pulse_handlers"
+version = "0.1.0"
+
+[[package]]
+name = "pulse_routes"
+version = "0.1.0"
+dependencies = [
+ "axum",
+ "pulse_database",
+ "pulse_handlers",
+ "tokio",
+ "tower",
+]
+
+[[package]]
 name = "quote"
 version = "1.0.40"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1212,17 +1223,6 @@ dependencies = [
  "libc",
  "untrusted",
  "windows-sys 0.52.0",
-]
-
-[[package]]
-name = "routes"
-version = "0.1.0"
-dependencies = [
- "axum",
- "database",
- "handlers",
- "tokio",
- "tower",
 ]
 
 [[package]]
@@ -2084,9 +2084,9 @@ name = "web-server"
 version = "0.1.0"
 dependencies = [
  "axum",
- "database",
- "handlers",
- "routes",
+ "pulse_database",
+ "pulse_handlers",
+ "pulse_routes",
  "tokio",
 ]
 

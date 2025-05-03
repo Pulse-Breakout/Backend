@@ -1,12 +1,12 @@
-use handlers;
-use routes;
-use database;
+use pulse_handlers;
+use pulse_routes;
+use pulse_database;
 use std::net::SocketAddr;
 
 #[tokio::main]
 async fn main() {
     // Initialize the database connection
-    let db = match database::connection::create_db_pool().await {
+    let db = match pulse_database::connection::create_db_pool().await {
         Ok(pool) => {
             println!("✅ Connected to database successfully");
             pool
@@ -18,7 +18,7 @@ async fn main() {
     };
     
     // Get the router from routes crate with database connection
-    let app = routes::create_router(db);
+    let app = pulse_routes::create_router(db);
 
     // Run it with hyper on localhost:8080
     let addr = SocketAddr::from(([127, 0, 0, 1], 8080));

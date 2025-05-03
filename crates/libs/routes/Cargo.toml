@@ -1,5 +1,5 @@
 [package]
-name = "routes"
+name = "pulse_routes"
 version = "0.1.0"
 edition = "2021"
 
@@ -8,5 +8,6 @@ axum.workspace = true
 tokio.workspace = true
 tower = "0.5.2"
 
-handlers = { path = "../handlers" }
-database = { path = "../database" }
+
+pulse_handlers.workspace = true
+pulse_database.workspace = true
