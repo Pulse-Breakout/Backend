@@ -2,15 +2,15 @@
 resolver = "2"
 members = [
     "bins/web-server",
-    "crates/libs/handlers", 
-    "crates/libs/routes", 
-    "crates/libs/database",
+    "crates/handlers",
+    "crates/routes",
+    "crates/database",
 ]
 
 
 [workspace.dependencies]
 axum = "0.8.3"
 tokio = { version = "1.36", features = ["full"] }
-pulse_database = {path = "crates/libs/database"}
-pulse_handlers = {path = "crates/libs/handlers"}
-pulse_routes = {path = "crates/libs/routes"}
+pulse_database = {path = "crates/database" }
+pulse_handlers = {path = "crates/handlers" }
+pulse_routes = {path = "crates/routes" }
