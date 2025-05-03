@@ -1,5 +1,5 @@
 use axum::{
-    routing::{get, post, put, delete},
+    routing::{get, post, delete},
     Router,
     extract::State,
 };
@@ -29,7 +29,6 @@ pub fn create_router(db: Arc<Database>) -> Router {
         .route("/api/users", get(user_handler::get_users))
         .route("/api/users", post(user_handler::create_user))
         .route("/api/users/{id}", get(user_handler::get_user))
-        .route("/api/users/{id}", put(user_handler::update_user))
         .route("/api/users/{id}", delete(user_handler::delete_user))
         .with_state(db)
 }

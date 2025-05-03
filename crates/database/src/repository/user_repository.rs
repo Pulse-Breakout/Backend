@@ -16,7 +16,10 @@ impl UserRepository {
         let users = sqlx::query_as!(
             User,
             r#"
-            SELECT * FROM users
+            SELECT 
+                id, xid, username, profile_image_url, wallet_address, 
+                email, created_at, updated_at
+            FROM users
             "#
         )
             .fetch_all(pool)
@@ -29,7 +32,10 @@ impl UserRepository {
         let user = sqlx::query_as!(
             User,
             r#"
-            SELECT * FROM users WHERE id = $1
+            SELECT 
+                id, xid, username, profile_image_url, wallet_address, 
+                email, created_at, updated_at
+            FROM users WHERE id = $1
             "#,
             id
         )
@@ -43,7 +49,10 @@ impl UserRepository {
         let user = sqlx::query_as!(
             User,
             r#"
-            SELECT * FROM users WHERE email = $1
+            SELECT 
+                id, xid, username, profile_image_url, wallet_address, 
+                email, created_at, updated_at
+            FROM users WHERE email = $1
             "#,
             email
         )
@@ -54,23 +63,27 @@ impl UserRepository {
     }
 
     pub async fn create(pool: &Pool<Postgres>, dto: CreateUserDto) -> Result<User, sqlx::Error> {
-        // 실제 구현에서는 비밀번호 해싱 로직이 필요합니다
-        let password_hash = dto.password; // 실제로는 해싱 필요
+        // In a real implementation, password hashing would be required
+        let password_hash = dto.password; // In reality, this should be hashed
+        let id = Uuid::new_v4();
+        let xid = id.to_string();
+        let now = Utc::now();
 
         let user = sqlx::query_as!(
             User,
             r#"
-            INSERT INTO users (id, username, email, password_hash, created_at, updated_at, is_active)
-            VALUES ($1, $2, $3, $4, $5, $6, $7)
+            INSERT INTO users (id, xid, username, profile_image_url, wallet_address, email, created_at, updated_at)
+            VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
             RETURNING *
             "#,
-            Uuid::new_v4(),
+            id,
+            xid,
             dto.username,
+            dto.profile_image_url.as_deref(),
+            dto.wallet_address,
             dto.email,
-            password_hash,
-            Utc::now(),
-            Utc::now(),
-            true
+            now,
+            now
         )
             .fetch_one(pool)
             .await?;
@@ -78,46 +91,7 @@ impl UserRepository {
         Ok(user)
     }
 
-    pub async fn update(pool: &Pool<Postgres>, id: Uuid, dto: UpdateUserDto) -> Result<Option<User>, sqlx::Error> {
-        // 현재 사용자 정보 조회
-        let current_user = Self::find_by_id(pool, id).await?;
-
-        if current_user.is_none() {
-            return Ok(None);
-        }
-
-        let current_user = current_user.unwrap();
-
-        // 업데이트할 필드 설정
-        let username = dto.username.unwrap_or(current_user.username);
-        let email = dto.email.unwrap_or(current_user.email);
-        let password_hash = match dto.password {
-            Some(password) => password, // 실제로는 해싱 필요
-            None => current_user.password_hash,
-        };
-        let is_active = dto.is_active.unwrap_or(current_user.is_active);
-
-        let updated_user = sqlx::query_as!(
-            User,
-            r#"
-            UPDATE users
-            SET username = $1, email = $2, password_hash = $3, updated_at = $4, is_active = $5
-            WHERE id = $6
-            RETURNING *
-            "#,
-            username,
-            email,
-            password_hash,
-            Utc::now(),
-            is_active,
-            id
-        )
-            .fetch_optional(pool)
-            .await?;
-
-        Ok(updated_user)
-    }
-
+   
     pub async fn delete(pool: &Pool<Postgres>, id: Uuid) -> Result<bool, sqlx::Error> {
         let result = sqlx::query!(
             r#"

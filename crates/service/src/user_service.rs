@@ -44,19 +44,6 @@ impl UserService {
         Ok(user)
     }
 
-    pub async fn update_user(pool: &Pool<Postgres>, id: Uuid, dto: UpdateUserDto) -> Result<User, UserServiceError> {
-        // Check if email is being changed and already exists
-        if let Some(new_email) = &dto.email {
-            if let Ok(Some(existing_user)) = UserRepository::find_by_email(pool, new_email).await {
-                if existing_user.id != id {
-                    return Err(UserServiceError::EmailExists);
-                }
-            }
-        }
-
-        let updated_user = UserRepository::update(pool, id, dto).await?;
-        updated_user.ok_or(UserServiceError::NotFound)
-    }
 
     pub async fn delete_user(pool: &Pool<Postgres>, id: Uuid) -> Result<(), UserServiceError> {
         let deleted = UserRepository::delete(pool, id).await?;

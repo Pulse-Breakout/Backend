@@ -80,22 +80,17 @@ pub async fn get_user(
 // Create new user
 pub async fn create_user(
     State(db): State<Arc<Database>>,
-    Json(dto): Json<CreateUserDto>,
+    Json(mut dto): Json<CreateUserDto>,
 ) -> Result<Json<User>, UserHandlerError> {
+    // Ensure wallet_address is set
+    if dto.wallet_address.is_empty() {
+        dto.wallet_address = "default_wallet".to_string();
+    }
+    
     let user = UserService::create_user(db.pool(), dto).await?;
     Ok(Json(user))
 }
 
-// Update user
-pub async fn update_user(
-    State(db): State<Arc<Database>>,
-    Path(id): Path<String>,
-    Json(dto): Json<UpdateUserDto>,
-) -> Result<Json<User>, UserHandlerError> {
-    let uuid = Uuid::parse_str(&id)?;
-    let user = UserService::update_user(db.pool(), uuid, dto).await?;
-    Ok(Json(user))
-}
 
 // Delete user
 pub async fn delete_user(
