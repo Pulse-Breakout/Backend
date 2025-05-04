@@ -64,7 +64,7 @@ impl UserRepository {
 
     pub async fn create(pool: &Pool<Postgres>, dto: CreateUserDto) -> Result<User, sqlx::Error> {
         // In a real implementation, password hashing would be required
-        let password_hash = dto.password; // In reality, this should be hashed
+        // Password hashing would be done here
         let id = Uuid::new_v4();
         let xid = id.to_string();
         let now = Utc::now();
@@ -72,9 +72,9 @@ impl UserRepository {
         let user = sqlx::query_as!(
             User,
             r#"
-            INSERT INTO users (id, xid, username, profile_image_url, wallet_address, email, created_at, updated_at)
-            VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
-            RETURNING *
+            INSERT INTO users (id, xid, username, profile_image_url, wallet_address, email, password_hash, created_at, updated_at, is_active)
+            VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
+            RETURNING id, xid, username, profile_image_url, wallet_address, email, created_at, updated_at
             "#,
             id,
             xid,
@@ -82,8 +82,10 @@ impl UserRepository {
             dto.profile_image_url.as_deref(),
             dto.wallet_address,
             dto.email,
+            dto.password,
             now,
-            now
+            now,
+            true
         )
             .fetch_one(pool)
             .await?;

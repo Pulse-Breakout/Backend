@@ -38,7 +38,7 @@ impl Database {
             .map_err(|e| DbError::Connection(e.to_string()))?;
 
         // Run migrations
-        sqlx::migrate!()
+        sqlx::migrate!("../../migrations")
             .run(&pool)
             .await
             .map_err(|e| DbError::Connection(format!("Migration failed: {}", e)))?;
