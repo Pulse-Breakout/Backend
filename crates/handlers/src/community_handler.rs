@@ -51,3 +51,13 @@ pub async fn create_community(
     
     Ok(Json(community))
 }
+
+// Get all communities
+pub async fn get_all_communities(
+    State(db): State<Arc<Database>>,
+) -> Result<Json<Vec<Community>>, CommunityHandlerError> {
+    let service = CommunityService::new(db);
+    let communities = service.get_all_communities().await?;
+    
+    Ok(Json(communities))
+}

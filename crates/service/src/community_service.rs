@@ -38,4 +38,10 @@ impl CommunityService {
             .await
             .map_err(|e| format!("Failed to create community: {}", e))
     }
+
+    pub async fn get_all_communities(&self) -> Result<Vec<Community>, String> {
+        CommunityRepository::find_all(self.db.pool())
+            .await
+            .map_err(|e| format!("Failed to get communities: {}", e))
+    }
 }

@@ -14,5 +14,16 @@ pub struct Content {
     #[serde(rename = "imageURL")]
     pub image_url: Option<String>,
     #[serde(rename = "communityId")]
-    pub community_id: String,
+    pub community_id: Uuid,
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+pub struct CreateContentDto {
+    pub content: String,
+    #[serde(rename = "senderId")]
+    pub sender_id: Option<String>,
+    #[serde(rename = "imageURL")]
+    pub image_url: Option<String>,
+    #[serde(rename = "communityId")]
+    pub community_id: Uuid,
 }

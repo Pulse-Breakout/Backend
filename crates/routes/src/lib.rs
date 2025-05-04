@@ -5,7 +5,7 @@ use axum::{
 };
 use std::sync::Arc;
 use pulse_database::connection::Database;
-use pulse_handlers::{user_handler, community_handler};
+use pulse_handlers::{user_handler, community_handler, content_handler};
 
 // Define a simple handler function
 async fn hello_world() -> &'static str {
@@ -32,6 +32,12 @@ pub fn create_router(db: Arc<Database>) -> Router {
         .route("/api/users/{id}", delete(user_handler::delete_user))
         // Community routes
         .route("/api/communities", post(community_handler::create_community))
+        .route("/api/communities", get(community_handler::get_all_communities))
+        // Content routes
+        .route("/api/contents", post(content_handler::create_content))
+        .route("/api/contents", get(content_handler::get_all_contents))
+        .route("/api/contents/{id}", get(content_handler::get_content))
+        .route("/api/communities/{community_id}/contents", get(content_handler::get_community_contents))
         .with_state(db)
 }
 
