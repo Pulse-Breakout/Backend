@@ -1,4 +1,4 @@
-use sqlx::{Pool, Postgres};
+use sqlx::{PgPool, Pool, Postgres};
 use uuid::Uuid;
 use chrono::Utc;
 
@@ -106,4 +106,21 @@ impl UserRepository {
 
         Ok(result.rows_affected() > 0)
     }
+
+
+
+    pub async fn get_xid_by_id(pool: &PgPool, id: &str) -> Result<String, sqlx::Error> {
+        // 문자열을 UUID로 파싱
+        let uuid_id = match Uuid::parse_str(id) {
+            Ok(uuid) => uuid,
+            Err(_) => return Err(sqlx::Error::Protocol("Invalid UUID format".into())),
+        };
+
+        let xid = sqlx::query_scalar!("SELECT xid FROM users WHERE id = $1", uuid_id)
+            .fetch_one(pool)
+            .await?;
+
+        Ok(xid)
+    }
+
 }
