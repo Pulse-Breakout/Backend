@@ -12,7 +12,9 @@ pub struct Community {
     #[serde(rename = "createdAt")]
     pub created_at: DateTime<Utc>,
     #[serde(rename = "creatorId")]
-    pub creator_id: String,
+    pub creator_id: Uuid,
+    #[serde(rename = "creatorXid")]
+    pub creator_xid: String,
     #[serde(rename = "lastMessageTime")]
     pub last_message_time: Option<DateTime<Utc>>,
     #[serde(rename = "contractAddress")]
@@ -35,7 +37,9 @@ pub struct CreateCommunityDto {
     pub description: Option<String>,
     // Making creator_id optional since we'll set it in the handler
     #[serde(rename = "creatorId", skip_serializing_if = "Option::is_none")]
-    pub creator_id: Option<String>,
+    pub creator_id: Option<Uuid>,
+    #[serde(rename = "creatorXid", skip_serializing_if = "Option::is_none")]
+    pub creator_xid: Option<String>,
     #[serde(rename = "contractAddress")]
     pub contract_address: Option<String>,
     #[serde(rename = "bountyAmount")]

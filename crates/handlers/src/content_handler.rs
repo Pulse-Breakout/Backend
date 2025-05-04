@@ -12,6 +12,7 @@ use pulse_database::connection::Database;
 pub enum ContentHandlerError {
     Service(String),
     NotFound,
+    BadRequest(String), // Add a proper BadRequest variant
 }
 
 // Convert ContentHandlerError to StatusCode and message
@@ -23,6 +24,9 @@ impl axum::response::IntoResponse for ContentHandlerError {
             },
             ContentHandlerError::NotFound => {
                 (StatusCode::NOT_FOUND, "Content not found".to_string())
+            },
+            ContentHandlerError::BadRequest(err) => {
+                (StatusCode::BAD_REQUEST, err)
             }
         };
 
@@ -44,15 +48,19 @@ impl From<String> for ContentHandlerError {
 // Create new content
 pub async fn create_content(
     State(db): State<Arc<Database>>,
-    Json(dto): Json<CreateContentDto>,
+    Json(mut dto): Json<CreateContentDto>,
 ) -> Result<Json<Content>, ContentHandlerError> {
-    // In a real application, you would extract the user_id from the authentication token
-    // For now, we'll use the same test user ID
-    let user_id = "2c81af65-e93a-4c28-a1e3-8ea22df8dec9".to_string();
     
+    println!("recieved");
+    // Get the user_id from the request DTO
+    let user_id = match &dto.sender_id {
+        Some(id) => id.to_string(),
+        None => return Err(ContentHandlerError::BadRequest("sender_id is required".to_string())),
+    };
+
     let service = ContentService::new(db);
     let content = service.create_content(user_id, dto).await?;
-    
+
     Ok(Json(content))
 }
 
@@ -64,7 +72,7 @@ pub async fn get_content(
     let service = ContentService::new(db);
     let content = service.get_content_by_id(id).await?
         .ok_or(ContentHandlerError::NotFound)?;
-    
+
     Ok(Json(content))
 }
 
@@ -74,7 +82,7 @@ pub async fn get_all_contents(
 ) -> Result<Json<Vec<Content>>, ContentHandlerError> {
     let service = ContentService::new(db);
     let contents = service.get_all_contents().await?;
-    
+
     Ok(Json(contents))
 }
 
@@ -85,6 +93,6 @@ pub async fn get_community_contents(
 ) -> Result<Json<Vec<Content>>, ContentHandlerError> {
     let service = ContentService::new(db);
     let contents = service.get_contents_by_community(community_id).await?;
-    
+
     Ok(Json(contents))
 }

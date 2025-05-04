@@ -14,7 +14,7 @@ impl CommunityRepository {
             Community,
             r#"
             SELECT 
-                id, name, description, created_at, creator_id, last_message_time, 
+                id, name, description, created_at, creator_id, creator_xid, last_message_time, 
                 contract_address, bounty_amount, time_limit, 
                 base_fee_percentage, wallet_address, image_url
             FROM communities
@@ -32,7 +32,7 @@ impl CommunityRepository {
             Community,
             r#"
             SELECT 
-                id, name, description, created_at, creator_id, last_message_time, 
+                id, name, description, created_at, creator_id, creator_xid, last_message_time, 
                 contract_address, bounty_amount, time_limit, 
                 base_fee_percentage, wallet_address, image_url
             FROM communities WHERE id = $1
@@ -46,12 +46,12 @@ impl CommunityRepository {
     }
 
     /// Find communities by creator ID
-    pub async fn find_by_creator_id(pool: &Pool<Postgres>, creator_id: &str) -> Result<Vec<Community>, sqlx::Error> {
+    pub async fn find_by_creator_id(pool: &Pool<Postgres>, creator_id: Uuid) -> Result<Vec<Community>, sqlx::Error> {
         let communities = sqlx::query_as!(
             Community,
             r#"
             SELECT 
-                id, name, description, created_at, creator_id, last_message_time, 
+                id, name, description, created_at, creator_id, creator_xid, last_message_time, 
                 contract_address, bounty_amount, time_limit, 
                 base_fee_percentage, wallet_address, image_url
             FROM communities WHERE creator_id = $1
@@ -69,18 +69,23 @@ impl CommunityRepository {
         let id = Uuid::new_v4();
         let now = Utc::now();
         let bounty_amount = dto.bounty_amount.unwrap_or(Decimal::new(0, 0));
+        
+        // Default creator IDs if not provided
+        let default_uuid = Uuid::parse_str("00000000-0000-0000-0000-000000000000").unwrap();
+        let creator_id = dto.creator_id.unwrap_or(default_uuid);
+        let creator_xid = dto.creator_xid.unwrap_or_else(|| "default-user".to_string());
 
         let community = sqlx::query_as!(
             Community,
             r#"
             INSERT INTO communities (
-                id, name, description, created_at, creator_id,
+                id, name, description, created_at, creator_id, creator_xid,
                 contract_address, bounty_amount, time_limit,
                 base_fee_percentage, wallet_address, image_url
             )
-            VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
+            VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)
             RETURNING 
-                id, name, description, created_at, creator_id, last_message_time,
+                id, name, description, created_at, creator_id, creator_xid, last_message_time,
                 contract_address, bounty_amount, time_limit,
                 base_fee_percentage, wallet_address, image_url
             "#,
@@ -88,7 +93,8 @@ impl CommunityRepository {
             dto.name,
             dto.description,
             now,
-            dto.creator_id.unwrap_or_else(|| "default-user".to_string()),
+            creator_id,
+            creator_xid,
             dto.contract_address,
             bounty_amount,
             dto.time_limit,
@@ -126,7 +132,7 @@ impl CommunityRepository {
                 image_url = COALESCE($9, image_url)
             WHERE id = $10
             RETURNING 
-                id, name, description, created_at, creator_id, last_message_time,
+                id, name, description, created_at, creator_id, creator_xid, last_message_time,
                 contract_address, bounty_amount, time_limit,
                 base_fee_percentage, wallet_address, image_url
             "#,

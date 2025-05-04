@@ -13,7 +13,7 @@ impl ContentRepository {
             Content,
             r#"
             SELECT 
-                id, content, created_at, sender_id, image_url, community_id
+                id, content, created_at, sender_id, sender_xid, image_url, community_id, wallet_address
             FROM content
             ORDER BY created_at DESC
             "#
@@ -30,7 +30,7 @@ impl ContentRepository {
             Content,
             r#"
             SELECT 
-                id, content, created_at, sender_id, image_url, community_id
+                id, content, created_at, sender_id, sender_xid, image_url, community_id, wallet_address
             FROM content WHERE id = $1
             "#,
             id
@@ -47,7 +47,7 @@ impl ContentRepository {
             Content,
             r#"
             SELECT 
-                id, content, created_at, sender_id, image_url, community_id
+                id, content, created_at, sender_id, sender_xid, image_url, community_id, wallet_address
             FROM content WHERE community_id = $1
             ORDER BY created_at DESC
             "#,
@@ -61,26 +61,42 @@ impl ContentRepository {
 
     /// Create a new content
     pub async fn create(pool: &Pool<Postgres>, dto: CreateContentDto) -> Result<Content, sqlx::Error> {
-        let id = Uuid::new_v4();
         let now = Utc::now();
+        let id = Uuid::new_v4(); // 새 UUID 생성
+
+        // Default sender IDs if not provided
+        let default_uuid = Uuid::parse_str("00000000-0000-0000-0000-000000000000").unwrap();
+        let sender_id = dto.sender_id.unwrap_or(default_uuid);
+        let sender_xid = dto.sender_xid.unwrap_or_else(|| "default-user".to_string());
+        let wallet_address = dto.wallet_address.unwrap_or_else(|| "".to_string());
 
         let content = sqlx::query_as!(
-            Content,
-            r#"
-            INSERT INTO content (
-                id, content, created_at, sender_id, image_url, community_id
-            )
-            VALUES ($1, $2, $3, $4, $5, $6)
-            RETURNING 
-                id, content, created_at, sender_id, image_url, community_id
-            "#,
-            id,
-            dto.content,
-            now,
-            dto.sender_id.unwrap_or_else(|| "default-user".to_string()),
-            dto.image_url,
-            dto.community_id
+        Content,
+        r#"
+        INSERT INTO content (
+            id,           -- ID 필드 추가
+            content, 
+            sender_id, 
+            sender_xid, 
+            image_url, 
+            community_id, 
+            wallet_address,
+            created_at
         )
+        VALUES (
+            $1, $2, $3, $4, $5, $6, $7, $8
+        )
+        RETURNING id, content, sender_id, sender_xid, image_url, community_id, wallet_address, created_at
+        "#,
+        id,              
+        dto.content,
+        sender_id,
+        sender_xid,
+        dto.image_url,
+        dto.community_id,
+        wallet_address,
+        now
+    )
             .fetch_one(pool)
             .await?;
 

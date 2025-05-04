@@ -31,8 +31,9 @@ impl CommunityService {
             .await
             .map_err(|e| format!("Failed to get user xid: {}", e))?;
 
-        // xid를 creator_id로 사용
-        dto.creator_id = Some(user_xid);
+        // uuid_id와 xid를 각각 설정
+        dto.creator_id = Some(uuid_id);
+        dto.creator_xid = Some(user_xid);
 
         CommunityRepository::create(self.db.pool(), dto)
             .await

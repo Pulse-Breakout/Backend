@@ -11,3 +11,5 @@ axum.workspace = true
 tokio.workspace = true
 
 teloxide.workspace = true
+tower = {version = "0.5.2"}
+tower-http = { version = "0.5.2", features = ["cors"] }

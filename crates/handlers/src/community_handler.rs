@@ -44,7 +44,7 @@ pub async fn create_community(
 ) -> Result<Json<Community>, CommunityHandlerError> {
     // In a real application, you would extract the user_id from the authentication token
     // For now, we'll use the first user ID from our database
-    let user_id = "2c81af65-e93a-4c28-a1e3-8ea22df8dec9".to_string();
+    let user_id = "5374209b-2abd-4138-88f5-75839c9db9c9".to_string();
     
     let service = CommunityService::new(db);
     let community = service.create_community(user_id, dto).await?;

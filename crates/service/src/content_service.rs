@@ -23,17 +23,24 @@ impl ContentService {
             Err(_) => return Err("Invalid UUID format".to_string()),
         };
 
-        // 사용자의 xid 조회
-        let user_xid = sqlx::query_scalar!(
-            "SELECT xid FROM users WHERE id = $1",
-            uuid_id
-        )
-            .fetch_one(self.db.pool())
-            .await
-            .map_err(|e| format!("Failed to get user xid: {}", e))?;
+        // Try to get the user's xid from the database
+        let user_xid = match sqlx::query_scalar!(
+        "SELECT xid FROM users WHERE id = $1",
+        uuid_id
+    )
+            .fetch_optional(self.db.pool())
+            .await {
+            Ok(Some(xid)) => xid,
+            Ok(None) => {
+                // If not found in database, use the user_id as the xid
+                user_id.clone()
+            },
+            Err(e) => return Err(format!("Database error: {}", e)),
+        };
 
-        // xid를 sender_id로 사용
-        dto.sender_id = Some(user_xid);
+        // uuid_id와 xid를 각각 설정
+        dto.sender_id = Some(uuid_id);
+        dto.sender_xid = Some(user_xid);
 
         ContentRepository::create(self.db.pool(), dto)
             .await

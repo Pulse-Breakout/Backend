@@ -11,14 +11,13 @@ pub struct UserRepository;
 impl UserRepository {
     
     
-    
     pub async fn find_all(pool: &Pool<Postgres>) -> Result<Vec<User>, sqlx::Error> {
         let users = sqlx::query_as!(
             User,
             r#"
             SELECT 
-                id, xid, username, profile_image_url, wallet_address, 
-                email, created_at, updated_at
+                id, xid, username, profile_image_url,  
+                email, created_at, updated_at, wallet_address
             FROM users
             "#
         )
